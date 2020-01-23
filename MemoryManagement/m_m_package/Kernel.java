@@ -509,5 +509,6 @@ public class Kernel extends Thread
     controlPanel.lowValueLabel.setText( "0" ) ;
     controlPanel.highValueLabel.setText( "0" ) ;
     init( command_file , config_file );
+    PageFault.num = 0;
   }
 }

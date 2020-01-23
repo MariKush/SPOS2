@@ -42,12 +42,12 @@ public class Common {
     return b;
   }
 
+  private static java.util.Random generator = new
+    java.util.Random(System.currentTimeMillis());
   public static long randomLong( long MAX ) 
   {
     long i = -1;
 
-    java.util.Random generator = new
-    java.util.Random(System.currentTimeMillis());
     while (i > MAX || i < 0)
     {
       int intOne = generator.nextInt();

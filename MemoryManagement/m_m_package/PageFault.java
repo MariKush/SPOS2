@@ -1,6 +1,5 @@
 package m_m_package;
 
-
 /* It is in this file, specifically the replacePage function that will
    be called by MemoryManagement when there is a page fault.  The 
    users of this program should rewrite PageFault to implement the 
@@ -52,38 +51,19 @@ public class PageFault {
    * @param controlPanel represents the graphical element of the 
    *   simulator, and allows one to modify the current display.
    */
+
+   static int num = 0;
+
   public static void replacePage ( Vector mem , int virtPageNum , int replacePageNum , ControlPanel controlPanel ) 
   {
-    int count = 0;
-    int oldestPage = -1;
-    int oldestTime = 0;
-    int firstPage = -1;
-    int map_count = 0;
-    boolean mapped = false;
-
-    while ( ! (mapped) || count != virtPageNum ) {
-      Page page = ( Page ) mem.elementAt( count );
-      if ( page.physical != -1 ) {
-        if (firstPage == -1) {
-          firstPage = count;
-        }
-        if (page.inMemTime > oldestTime) {
-          oldestTime = page.inMemTime;
-          oldestPage = count;
-          mapped = true;
-        }
-      }
-      count++;
-      if ( count == virtPageNum ) {
-        mapped = true;
-      }
+    Page page = ( Page ) mem.elementAt(num);
+    while(page.physical < 0){
+      num = (num+1)%64;
+      page = ( Page ) mem.elementAt(num);
     }
-    if (oldestPage == -1) {
-      oldestPage = firstPage;
-    }
-    Page page = ( Page ) mem.elementAt( oldestPage );
+     
     Page nextpage = ( Page ) mem.elementAt( replacePageNum );
-    controlPanel.removePhysicalPage( oldestPage );
+    controlPanel.removePhysicalPage( num );
     nextpage.physical = page.physical;
     controlPanel.addPhysicalPage( nextpage.physical , replacePageNum );
     page.inMemTime = 0;
