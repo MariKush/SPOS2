@@ -63,14 +63,6 @@ public class PageFault {
       page = ( Page ) mem.elementAt(index);
     }
     
-    /*
-    Page page = ( Page ) mem.elementAt(num);
-    while(page.physical < 0){
-      num = (num+1)%64;
-      page = ( Page ) mem.elementAt(num);
-    }
-    */
-
     Page nextpage = ( Page ) mem.elementAt( replacePageNum );
     controlPanel.removePhysicalPage( num );  
     nextpage.physical = page.physical;
