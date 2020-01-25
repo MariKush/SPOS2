@@ -5,11 +5,12 @@
 WRITE random
 WRITE random
 WRITE random
+READ random
 WRITE random
 WRITE random
 WRITE random
-WRITE random
-WRITE random
+READ random
+READ random
 WRITE random
 WRITE random
 WRITE random

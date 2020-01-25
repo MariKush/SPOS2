@@ -55,15 +55,24 @@ public class PageFault {
    static int num = 0;
 
   public static void replacePage ( Vector mem , int virtPageNum , int replacePageNum , ControlPanel controlPanel ) 
-  {
+  {   
+    int index = 0;
+    Page page = ( Page ) mem.elementAt(index);
+    while(page.physical != num){
+      index++;
+      page = ( Page ) mem.elementAt(index);
+    }
+    
+    /*
     Page page = ( Page ) mem.elementAt(num);
     while(page.physical < 0){
       num = (num+1)%64;
       page = ( Page ) mem.elementAt(num);
     }
-     
+    */
+
     Page nextpage = ( Page ) mem.elementAt( replacePageNum );
-    controlPanel.removePhysicalPage( num );
+    controlPanel.removePhysicalPage( num );  
     nextpage.physical = page.physical;
     controlPanel.addPhysicalPage( nextpage.physical , replacePageNum );
     page.inMemTime = 0;
@@ -71,5 +80,7 @@ public class PageFault {
     page.R = 0;
     page.M = 0;
     page.physical = -1;
+
+    num = (num+1)%32;
   }
 }
