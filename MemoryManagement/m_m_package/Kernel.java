@@ -88,7 +88,6 @@ public class Kernel extends Thread
       {
         DataInputStream in = new DataInputStream(new FileInputStream(f));
         while ((line = in.readLine()) != null) 
-
         {
           if (line.startsWith("memset")) 
           { 
@@ -142,22 +141,11 @@ public class Kernel extends Thread
               page.inMemTime = inMemTime;
               page.lastTouchTime = lastTouchTime;
 
-              if(maxPhysical < page.physical) physical = maxPhysical;
+              if(maxPhysical < page.physical) maxPhysical = physical;
               
             }
           }
  
-          for(int k = 0; k <= maxPhysical; k++){
-              phIndex.add(k, -1);
-          }
-
-          int p = 0;
-          for(int t = 0; t <= virtPageNum; t++){
-              if(((Page)memVector.elementAt(t)).physical > -1){
-                  phIndex.set(p, t);
-                  p++;
-              }
-          }
           
          if (line.startsWith("enable_logging")) 
           { 
@@ -237,6 +225,17 @@ public class Kernel extends Thread
         }
 
 
+      for(int k = 0; k <= maxPhysical; k++){
+          phIndex.add(k, -1);
+      }
+
+      int p = 0;
+      for(int t = 0; t <= virtPageNum; t++){
+          if(((Page)memVector.elementAt(t)).physical != -1){
+              phIndex.set(p, t);
+              p++;
+          }
+      }
         
 
         in.close();
