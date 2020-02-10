@@ -17,7 +17,7 @@ public class Kernel extends Thread
   private String config_file;
   private ControlPanel controlPanel ;
   private Vector memVector = new Vector();
-  ArrayList<Integer> phIndex = new ArrayList<Integer>();
+  ArrayList<Integer> physicalPages = new ArrayList<Integer>();
   private Vector instructVector = new Vector();
   private String status;
   private boolean doStdoutLog = false;
@@ -26,6 +26,7 @@ public class Kernel extends Thread
   public int runcycles;
   public long block = (int) Math.pow(2,12);
   public static byte addressradix = 10;
+  public static int physicalCount = 0;
 
   public void init( String commands , String config )  
   {
@@ -42,7 +43,7 @@ public class Kernel extends Thread
     int id = 0;
     int physical = 0;
     int physical_count = 0;
-    int maxPhysical = 0;
+    
     int inMemTime = 0;
     int lastTouchTime = 0;
     int map_count = 0;
@@ -141,8 +142,6 @@ public class Kernel extends Thread
               page.inMemTime = inMemTime;
               page.lastTouchTime = lastTouchTime;
 
-              if(maxPhysical < page.physical) maxPhysical = physical;
-              
             }
           }
  
@@ -224,18 +223,8 @@ public class Kernel extends Thread
           }
         }
 
+       
 
-      for(int k = 0; k <= maxPhysical; k++){
-          phIndex.add(k, -1);
-      }
-
-      int p = 0;
-      for(int t = 0; t <= virtPageNum; t++){
-          if(((Page)memVector.elementAt(t)).physical != -1){
-              phIndex.set(p, t);
-              p++;
-          }
-      }
         
 
         in.close();
@@ -332,7 +321,8 @@ public class Kernel extends Thread
       }
       physical_count = 0;
     }
-    if ( map_count < ( virtPageNum +1 ) / 2 )
+    
+    /*if ( map_count < ( virtPageNum +1 ) / 2 )
     {
       for (i = 0; i < virtPageNum; i++) 
       {
@@ -343,7 +333,10 @@ public class Kernel extends Thread
           map_count++;
         }
       }
-    }
+    }*/
+
+    physicalCount = 0;
+   
     for (i = 0; i < virtPageNum; i++) 
     {
       Page page = (Page) memVector.elementAt(i);
@@ -353,9 +346,26 @@ public class Kernel extends Thread
       } 
       else
       {
-        controlPanel.addPhysicalPage( i , page.physical );
+        physicalCount++;
+        controlPanel.addPhysicalPage( page.physical, i );
       }
     }
+
+    System.out.println("maxPhysical1234 = " + physicalCount);
+
+    
+    for(int k = 0; k <= physicalCount; k++){
+      physicalPages.add(k, -1);
+   }
+
+    int p = 0;
+    for(int t = 0; t <= virtPageNum; t++){
+        if(((Page)memVector.elementAt(t)).physical != -1){
+            physicalPages.set(p, t);
+            p++;
+        }
+    }
+
     for (i = 0; i < instructVector.size(); i++) 
     {
       high = block * virtPageNum;
@@ -459,7 +469,7 @@ public class Kernel extends Thread
         {
           System.out.println( "READ " + Long.toString(instruct.addr , addressradix) + " ... page fault" );
         }
-        PageFault.replacePage( memVector , phIndex, virtPageNum , Virtual2Physical.pageNum( instruct.addr , virtPageNum , block ) , controlPanel );
+        PageFault.replacePage( memVector , physicalPages, virtPageNum , Virtual2Physical.pageNum( instruct.addr , virtPageNum , block ) , controlPanel );
         controlPanel.pageFaultValueLabel.setText( "YES" );
       } 
       else 
@@ -489,7 +499,7 @@ public class Kernel extends Thread
         {
            System.out.println( "WRITE " + Long.toString(instruct.addr , addressradix) + " ... page fault" );
         }
-        PageFault.replacePage( memVector , phIndex, virtPageNum , Virtual2Physical.pageNum( instruct.addr , virtPageNum , block ) , controlPanel );          controlPanel.pageFaultValueLabel.setText( "YES" );
+        PageFault.replacePage( memVector , physicalPages, virtPageNum , Virtual2Physical.pageNum( instruct.addr , virtPageNum , block ) , controlPanel );          controlPanel.pageFaultValueLabel.setText( "YES" );
       } 
       else 
       {
