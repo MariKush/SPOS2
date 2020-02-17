@@ -1,11 +1,11 @@
 WRITE 0 ... page fault
-WRITE 4000 ... page fault
+WRITE 4000 ... okay
 WRITE 8000 ... page fault
-WRITE c000 ... page fault
+WRITE c000 ... okay
 WRITE 10000 ... page fault
 WRITE 14000 ... page fault
 WRITE 18000 ... page fault
-WRITE 1c000 ... page fault
+WRITE 1c000 ... okay
 WRITE 20000 ... page fault
 WRITE 24000 ... page fault
 WRITE 28000 ... page fault

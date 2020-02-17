@@ -18,6 +18,7 @@ public class Kernel extends Thread
   private ControlPanel controlPanel ;
   private Vector memVector = new Vector();
   ArrayList<Integer> physicalPages = new ArrayList<Integer>();
+  ArrayList<Boolean> isNotFree = new ArrayList<Boolean>();
   private Vector instructVector = new Vector();
   private String status;
   private boolean doStdoutLog = false;
@@ -27,6 +28,8 @@ public class Kernel extends Thread
   public long block = (int) Math.pow(2,12);
   public static byte addressradix = 10;
   public static int physicalCount = 0;
+  public static int freePage = 0;
+
 
   public void init( String commands , String config )  
   {
@@ -353,18 +356,34 @@ public class Kernel extends Thread
 
     System.out.println("maxPhysical1234 = " + physicalCount);
 
+    freePage = (virtPageNum+1) / 2 - physicalCount;
+
     
-    for(int k = 0; k <= physicalCount; k++){
+    for(int k = 0; k <= (virtPageNum+1) / 2; k++){
       physicalPages.add(k, -1);
    }
 
-    int p = 0;
     for(int t = 0; t <= virtPageNum; t++){
         if(((Page)memVector.elementAt(t)).physical != -1){
-            physicalPages.set(p, t);
-            p++;
+            physicalPages.set(((Page)memVector.elementAt(t)).physical, t);
+          
         }
     }
+
+    /*
+    for(int k = 0; k <= (virtPageNum+1) / 2; k++){
+      isNotFree.add(k, false);
+   }
+
+
+    for(int k = 0; k <= virtPageNum; k++){
+      if(((Page)memVector.elementAt(k)).physical != -1){
+         isNotFree.set(((Page)memVector.elementAt(k)).physical, true); 
+      }   
+   }
+   */
+
+
 
     for (i = 0; i < instructVector.size(); i++) 
     {
@@ -469,7 +488,7 @@ public class Kernel extends Thread
         {
           System.out.println( "READ " + Long.toString(instruct.addr , addressradix) + " ... page fault" );
         }
-        PageFault.replacePage( memVector , physicalPages, virtPageNum , Virtual2Physical.pageNum( instruct.addr , virtPageNum , block ) , controlPanel );
+        PageFault.replacePage( memVector , physicalPages, isNotFree, virtPageNum , Virtual2Physical.pageNum( instruct.addr , virtPageNum , block ) , controlPanel );
         controlPanel.pageFaultValueLabel.setText( "YES" );
       } 
       else 
@@ -499,7 +518,7 @@ public class Kernel extends Thread
         {
            System.out.println( "WRITE " + Long.toString(instruct.addr , addressradix) + " ... page fault" );
         }
-        PageFault.replacePage( memVector , physicalPages, virtPageNum , Virtual2Physical.pageNum( instruct.addr , virtPageNum , block ) , controlPanel );          controlPanel.pageFaultValueLabel.setText( "YES" );
+        PageFault.replacePage( memVector , physicalPages, isNotFree, virtPageNum , Virtual2Physical.pageNum( instruct.addr , virtPageNum , block ) , controlPanel );          controlPanel.pageFaultValueLabel.setText( "YES" );
       } 
       else 
       {

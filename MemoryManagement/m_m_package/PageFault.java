@@ -56,23 +56,40 @@ public class PageFault {
 
    
 
-  public static void replacePage ( Vector mem , ArrayList<Integer> physicalPages,  int virtPageNum , int replacePageNum , ControlPanel controlPanel ) 
-  {   
+  public static void replacePage ( Vector mem , ArrayList<Integer> physicalPages,  ArrayList<Boolean> isNotFree, int virtPageNum , int replacePageNum , ControlPanel controlPanel ) 
+  {
+    if(Kernel.freePage == 0){
+      Page page = ( Page ) mem.elementAt(physicalPages.get(num));
     
-    Page page = ( Page ) mem.elementAt(physicalPages.get(num));
-    
-    Page nextpage = ( Page ) mem.elementAt( replacePageNum );
-    controlPanel.removePhysicalPage( physicalPages.get(num) );  
-    nextpage.physical = page.physical;
-    controlPanel.addPhysicalPage( nextpage.physical , replacePageNum );
-    page.inMemTime = 0;
-    page.lastTouchTime = 0;
-    page.R = 0;
-    page.M = 0;
-    page.physical = -1;
+      Page nextpage = ( Page ) mem.elementAt( replacePageNum );
+      controlPanel.removePhysicalPage( physicalPages.get(num) );  
+      nextpage.physical = page.physical;
+      controlPanel.addPhysicalPage( nextpage.physical , replacePageNum );
+      page.inMemTime = 0;
+      page.lastTouchTime = 0;
+      page.R = 0;
+      page.M = 0;
+      page.physical = -1;
 
-    physicalPages.set(num, replacePageNum);
-    num = (num+1)%Kernel.physicalCount;
+      physicalPages.set(num, replacePageNum);
+      num = (num+1)%Kernel.physicalCount;
+    }
+    else{
+      //int firstFreeIndex = isNotFree.indexOf(false);
+      //isNotFree.set(firstFreeIndex, true);
+
+      int firstFreeIndex = physicalPages.indexOf(-1);
+      Page nextpage = ( Page ) mem.elementAt( replacePageNum );
+      nextpage.physical = firstFreeIndex;
+      controlPanel.addPhysicalPage( nextpage.physical , replacePageNum );
+      physicalPages.set(firstFreeIndex, replacePageNum);  
+      Kernel.physicalCount++;
+      Kernel.freePage--;
+
+    }
+     
+    
+    
     
   }
 }
