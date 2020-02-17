@@ -18,7 +18,6 @@ public class Kernel extends Thread
   private ControlPanel controlPanel ;
   private Vector memVector = new Vector();
   ArrayList<Integer> physicalPages = new ArrayList<Integer>();
-  ArrayList<Boolean> isNotFree = new ArrayList<Boolean>();
   private Vector instructVector = new Vector();
   private String status;
   private boolean doStdoutLog = false;
@@ -370,19 +369,6 @@ public class Kernel extends Thread
         }
     }
 
-    /*
-    for(int k = 0; k <= (virtPageNum+1) / 2; k++){
-      isNotFree.add(k, false);
-   }
-
-
-    for(int k = 0; k <= virtPageNum; k++){
-      if(((Page)memVector.elementAt(k)).physical != -1){
-         isNotFree.set(((Page)memVector.elementAt(k)).physical, true); 
-      }   
-   }
-   */
-
 
 
     for (i = 0; i < instructVector.size(); i++) 
@@ -488,7 +474,7 @@ public class Kernel extends Thread
         {
           System.out.println( "READ " + Long.toString(instruct.addr , addressradix) + " ... page fault" );
         }
-        PageFault.replacePage( memVector , physicalPages, isNotFree, virtPageNum , Virtual2Physical.pageNum( instruct.addr , virtPageNum , block ) , controlPanel );
+        PageFault.replacePage( memVector , physicalPages, virtPageNum , Virtual2Physical.pageNum( instruct.addr , virtPageNum , block ) , controlPanel );
         controlPanel.pageFaultValueLabel.setText( "YES" );
       } 
       else 
@@ -518,7 +504,7 @@ public class Kernel extends Thread
         {
            System.out.println( "WRITE " + Long.toString(instruct.addr , addressradix) + " ... page fault" );
         }
-        PageFault.replacePage( memVector , physicalPages, isNotFree, virtPageNum , Virtual2Physical.pageNum( instruct.addr , virtPageNum , block ) , controlPanel );          controlPanel.pageFaultValueLabel.setText( "YES" );
+        PageFault.replacePage( memVector , physicalPages, virtPageNum , Virtual2Physical.pageNum( instruct.addr , virtPageNum , block ) , controlPanel );          controlPanel.pageFaultValueLabel.setText( "YES" );
       } 
       else 
       {

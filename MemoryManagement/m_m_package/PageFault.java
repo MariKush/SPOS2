@@ -56,7 +56,7 @@ public class PageFault {
 
    
 
-  public static void replacePage ( Vector mem , ArrayList<Integer> physicalPages,  ArrayList<Boolean> isNotFree, int virtPageNum , int replacePageNum , ControlPanel controlPanel ) 
+  public static void replacePage ( Vector mem , ArrayList<Integer> physicalPages, int virtPageNum , int replacePageNum , ControlPanel controlPanel ) 
   {
     if(Kernel.freePage == 0){
       Page page = ( Page ) mem.elementAt(physicalPages.get(num));
@@ -75,9 +75,6 @@ public class PageFault {
       num = (num+1)%Kernel.physicalCount;
     }
     else{
-      //int firstFreeIndex = isNotFree.indexOf(false);
-      //isNotFree.set(firstFreeIndex, true);
-
       int firstFreeIndex = physicalPages.indexOf(-1);
       Page nextpage = ( Page ) mem.elementAt( replacePageNum );
       nextpage.physical = firstFreeIndex;
